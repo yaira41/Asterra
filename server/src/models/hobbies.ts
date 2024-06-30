@@ -17,3 +17,12 @@ const getHobbiesByUserId = async (userId: number): Promise<Hobby[]> => {
   return result.rows;
 };
 
+const createHobby = async (hobby: Hobby): Promise<Hobby> => {
+  const { user_id, hobbies } = hobby;
+  const result = await pool.query(
+    "INSERT INTO hobbies (user_id, hobbies) VALUES ($1, $2) RETURNING *",
+    [user_id, hobbies]
+  );
+  return result.rows[0];
+};
+
