@@ -26,3 +26,12 @@ const createHobby = async (hobby: Hobby): Promise<Hobby> => {
   return result.rows[0];
 };
 
+const deleteHobby = async (user_id: number): Promise<Hobby> => {
+  const result = await pool.query(
+    "DELETE FROM hobbies WHERE user_id = $1 RETURNING *",
+    [user_id]
+  );
+  return result.rows[0];
+};
+
+export { getHobbies, getHobbiesByUserId, createHobby, deleteHobby };
