@@ -27,3 +27,12 @@ const createUser = async (user: User): Promise<User> => {
   return result.rows[0];
 };
 
+const deleteUser = async (id: number): Promise<User> => {
+  const result = await pool.query(
+    "DELETE FROM users WHERE id = $1 RETURNING *",
+    [id]
+  );
+  return result.rows[0];
+};
+
+export { getUsers, getUserById, createUser, deleteUser };
