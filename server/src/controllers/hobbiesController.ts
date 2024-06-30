@@ -32,3 +32,16 @@ const getHobbiesForUser = async (req: Request, res: Response) => {
   }
 };
 
+const addHobby = async (req: Request, res: Response) => {
+  try {
+    const hobby = await createHobby(req.body);
+    res.status(201).json(hobby);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
+  }
+};
+
