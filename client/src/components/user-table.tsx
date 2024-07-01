@@ -21,6 +21,18 @@ const UserTable: React.FC = () => {
   const deleteUserMutation = useDeleteUser();
 
   if (usersLoading || hobbiesLoading) return <div>Loading...</div>;
+
+  const getUserHobbies = (userId: number) => {
+    const userHobbies = hobbies?.find(
+      (userHobbies: Hobby) => userHobbies.user_id === userId
+    );
+    return userHobbies?.hobbies?.length ? (
+      userHobbies.hobbies.map((hobby) => <li key={hobby}>{hobby}</li>)
+    ) : (
+      <></>
+    );
+  };
+
   return (
   );
 };
