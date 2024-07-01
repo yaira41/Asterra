@@ -34,6 +34,44 @@ const UserTable: React.FC = () => {
   };
 
   return (
+    <TableContainer sx={{ maxHeight: 500 }} component={Paper}>
+      <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
+            <TableCell>Address</TableCell>
+            <TableCell>Phone Number</TableCell>
+            <TableCell>Hobbies</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {users?.map((user: User) => (
+            <TableRow key={user.id}>
+              <TableCell>{user.id}</TableCell>
+              <TableCell>{user.firstName}</TableCell>
+              <TableCell>{user.lastName}</TableCell>
+              <TableCell>{user.address}</TableCell>
+              <TableCell>{user.phoneNumber}</TableCell>
+              <TableCell>
+                <ul>{getUserHobbies(user.id!)}</ul>
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => deleteUserMutation.mutate(user.id!)}
+                >
+                  Delete User
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
