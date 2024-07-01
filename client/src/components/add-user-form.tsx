@@ -62,14 +62,17 @@ const AddUserForm: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (state.isValid) {
-      addUserMutation.mutate({
-        firstName: state.firstName,
-        lastName: state.lastName,
-        address: state.address,
-        phoneNumber: state.phoneNumber,
-      });
-
-      dispatch({ type: "CLEAR_STATE" });
+      addUserMutation.mutate(
+        {
+          firstName: state.firstName,
+          lastName: state.lastName,
+          address: state.address,
+          phoneNumber: state.phoneNumber,
+        },
+        {
+          onSuccess: () => dispatch({ type: "CLEAR_STATE" }),
+        }
+      );
     }
   };
 
