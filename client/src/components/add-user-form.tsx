@@ -75,7 +75,7 @@ const AddUserForm: React.FC = () => {
   }, [state.firstName, state.lastName, state.address, state.phoneNumber]);
 
   const checkPhone = () => {
-    return state.phoneError === true && state.phoneNumber;
+    return state.phoneError === true && !!state.phoneNumber;
   };
 
   return (
