@@ -1,6 +1,15 @@
 import pool from "../config/db";
+import { createUserHobbies } from "./hobbies";
 
 type User = {
+  id?: number;
+  firstName: string;
+  lastName: string;
+  address: string;
+  phoneNumber: string;
+};
+
+type DBUser = {
   id?: number;
   first_name: string;
   last_name: string;
@@ -10,8 +19,15 @@ type User = {
 
 const getUsers = async (): Promise<User[]> => {
   const result = await pool.query(`SELECT * FROM "YAIR_AVIVI".users`);
+  const users: User[] = result.rows.map((row) => ({
+    id: row.id,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    address: row.address,
+    phoneNumber: row.phone_number,
+  }));
 
-  return result.rows;
+  return users;
 };
 
 const getUserById = async (id: number): Promise<User> => {
@@ -23,11 +39,13 @@ const getUserById = async (id: number): Promise<User> => {
 };
 
 const createUser = async (user: User): Promise<User> => {
-  const { first_name, last_name, address, phone_number } = user;
+  const { firstName, lastName, address, phoneNumber } = user;
   const result = await pool.query(
     `INSERT INTO "YAIR_AVIVI".users (first_name, last_name, address, phone_number) VALUES ($1, $2, $3, $4) RETURNING *`,
-    [first_name, last_name, address, phone_number]
+    [firstName, lastName, address, phoneNumber]
   );
+
+  createUserHobbies(result.rows[0].id);
   return result.rows[0];
 };
 
