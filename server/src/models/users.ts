@@ -18,8 +18,15 @@ type DBUser = {
 
 const getUsers = async (): Promise<User[]> => {
   const result = await pool.query(`SELECT * FROM "YAIR_AVIVI".users`);
+  const users: User[] = result.rows.map((row) => ({
+    id: row.id,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    address: row.address,
+    phoneNumber: row.phone_number,
+  }));
 
-  return result.rows;
+  return users;
 };
 
 const getUserById = async (id: number): Promise<User> => {
