@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect } from "react";
-import { TextField, Button, Container } from "@mui/material";
+import { TextField, Button, Container, CircularProgress } from "@mui/material";
 import { useCreateUser } from "../hooks/useCreateUser";
 
 type UserState = {
@@ -132,9 +132,13 @@ const AddUserForm: React.FC = () => {
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!state.isValid}
+          disabled={!state.isValid || addUserMutation.isPending}
         >
-          Add User
+          {addUserMutation.isPending ? (
+            <CircularProgress size={24} />
+          ) : (
+            "Add User"
+          )}
         </Button>
       </form>
     </Container>
