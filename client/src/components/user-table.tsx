@@ -61,10 +61,10 @@ const UserTable: React.FC = () => {
               <TableCell>
                 <Button
                   variant="contained"
-                  color="secondary"
+                  color="error"
                   onClick={() => deleteUserMutation.mutate(user.id!)}
                 >
-                  Delete User
+                  Delete
                 </Button>
               </TableCell>
             </TableRow>
