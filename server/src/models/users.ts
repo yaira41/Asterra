@@ -2,6 +2,14 @@ import pool from "../config/db";
 
 type User = {
   id?: number;
+  firstName: string;
+  lastName: string;
+  address: string;
+  phoneNumber: string;
+};
+
+type DBUser = {
+  id?: number;
   first_name: string;
   last_name: string;
   address: string;
