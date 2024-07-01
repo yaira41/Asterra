@@ -1,4 +1,5 @@
 import pool from "../config/db";
+import { createUserHobbies } from "./hobbies";
 
 type User = {
   id?: number;
@@ -38,11 +39,13 @@ const getUserById = async (id: number): Promise<User> => {
 };
 
 const createUser = async (user: User): Promise<User> => {
-  const { first_name, last_name, address, phone_number } = user;
+  const { firstName, lastName, address, phoneNumber } = user;
   const result = await pool.query(
     `INSERT INTO "YAIR_AVIVI".users (first_name, last_name, address, phone_number) VALUES ($1, $2, $3, $4) RETURNING *`,
-    [first_name, last_name, address, phone_number]
+    [firstName, lastName, address, phoneNumber]
   );
+
+  createUserHobbies(result.rows[0].id);
   return result.rows[0];
 };
 
