@@ -12,11 +12,17 @@ import {
 import useAddHobby from "../hooks/useAddHobbie";
 import { useUsers } from "../hooks/useUsers";
 import { User } from "../types/user";
+import Toaster from "./toaster";
 
 const AddHobbyForm: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [hobby, setHobby] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
+  const [toaster, setToaster] = useState({
+    open: false,
+    message: "",
+    color: "success" as "success" | "error",
+  });
   const addHobbyMutation = useAddHobby();
 
   const { data: users, isLoading: isUsersLoading } = useUsers();
@@ -29,6 +35,18 @@ const AddHobbyForm: React.FC = () => {
         onSuccess: () => {
           setSelectedUserId("");
           setHobby("");
+          setToaster({
+            open: true,
+            message: "Hobby added successfully!",
+            color: "success",
+          });
+        },
+        onError: () => {
+          setToaster({
+            open: true,
+            message: "Failed to add hobby!",
+            color: "error",
+          });
         },
       }
     );
@@ -37,6 +55,10 @@ const AddHobbyForm: React.FC = () => {
   useEffect(() => {
     setIsFormValid(selectedUserId !== "" && hobby.trim() !== "");
   }, [selectedUserId, hobby]);
+
+  const handleCloseToaster = () => {
+    setToaster({ ...toaster, open: false });
+  };
 
   return (
     <Container>
@@ -79,6 +101,12 @@ const AddHobbyForm: React.FC = () => {
           )}
         </Button>
       </form>
+      <Toaster
+        message={toaster.message}
+        open={toaster.open}
+        color={toaster.color}
+        onClose={handleCloseToaster}
+      />
     </Container>
   );
 };

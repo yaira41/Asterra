@@ -1,6 +1,7 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { TextField, Button, Container, CircularProgress } from "@mui/material";
 import { useCreateUser } from "../hooks/useCreateUser";
+import Toaster from "./toaster";
 
 type UserState = {
   firstName: string;
@@ -57,6 +58,11 @@ const reducer = (state: UserState, action: UserAction): UserState => {
 
 const AddUserForm: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [toaster, setToaster] = useState({
+    open: false,
+    message: "",
+    color: "success" as "success" | "error",
+  });
   const addUserMutation = useCreateUser();
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -70,7 +76,20 @@ const AddUserForm: React.FC = () => {
           phoneNumber: state.phoneNumber,
         },
         {
-          onSuccess: () => dispatch({ type: "CLEAR_STATE" }),
+          onSuccess: () => {
+            dispatch({ type: "CLEAR_STATE" });
+            setToaster({
+              open: true,
+              message: "User added successfully!",
+              color: "success",
+            });
+          },
+          onError: () =>
+            setToaster({
+              open: true,
+              message: "Failed to add user!",
+              color: "error",
+            }),
         }
       );
     }
@@ -84,6 +103,10 @@ const AddUserForm: React.FC = () => {
 
   const checkPhone = () => {
     return state.phoneError === true && !!state.phoneNumber;
+  };
+
+  const handleCloseToaster = () => {
+    setToaster({ ...toaster, open: false });
   };
 
   return (
@@ -141,6 +164,13 @@ const AddUserForm: React.FC = () => {
           )}
         </Button>
       </form>
+
+      <Toaster
+        message={toaster.message}
+        open={toaster.open}
+        color={toaster.color}
+        onClose={handleCloseToaster}
+      />
     </Container>
   );
 };
