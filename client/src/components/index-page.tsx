@@ -1,26 +1,28 @@
 import React from "react";
-import { Container, Grid, Typography } from "@mui/material";
+import { Container, Typography, Box } from "@mui/material";
 import AddUserForm from "./add-user-form";
 import AddHobbyForm from "./add-hobby-form";
 import UserTable from "./user-table";
 
-const IndexPage: React.FC = () => {
+const UserManagement: React.FC = () => {
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        User Management
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={3}>
+      <Box display="flex" marginLeft={30} marginBottom={4}>
+        <Typography variant="h4" gutterBottom>
+          User Management
+        </Typography>
+      </Box>
+      <Box display="flex" justifyContent="space-between">
+        <Box display="flex" flexDirection="column" width="30%">
           <AddUserForm />
           <AddHobbyForm />
-        </Grid>
-        <Grid item xs={9}>
+        </Box>
+        <Box width="68%" marginTop={1.5}>
           <UserTable />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   );
 };
 
-export default IndexPage;
+export default UserManagement;
