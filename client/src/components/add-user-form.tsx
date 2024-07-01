@@ -8,7 +8,7 @@ type UserState = {
   address: string;
   phoneNumber: string;
   isValid: boolean;
-  phoneError?: boolean;
+  phoneError: boolean;
 };
 
 type UserAction =
@@ -17,7 +17,8 @@ type UserAction =
   | { type: "SET_ADDRESS"; payload: string }
   | { type: "SET_PHONE_NUMBER"; payload: string }
   | { type: "SET_VALIDITY" }
-  | { type: "SET_PHONE_ERROR"; payload: boolean };
+  | { type: "SET_PHONE_ERROR"; payload: boolean }
+  | { type: "CLEAR_STATE" };
 
 const initialState: UserState = {
   firstName: "",
@@ -25,7 +26,7 @@ const initialState: UserState = {
   address: "",
   phoneNumber: "",
   isValid: false,
-  phoneError: undefined,
+  phoneError: false,
 };
 
 const reducer = (state: UserState, action: UserAction): UserState => {
@@ -47,6 +48,8 @@ const reducer = (state: UserState, action: UserAction): UserState => {
       return { ...state, isValid };
     case "SET_PHONE_ERROR":
       return { ...state, phoneError: action.payload };
+    case "CLEAR_STATE":
+      return initialState;
     default:
       return state;
   }
@@ -65,6 +68,8 @@ const AddUserForm: React.FC = () => {
         address: state.address,
         phoneNumber: state.phoneNumber,
       });
+
+      dispatch({ type: "CLEAR_STATE" });
     }
   };
 
