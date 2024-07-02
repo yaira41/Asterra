@@ -1,3 +1,4 @@
+import { NewHobby } from "../../types/hobbies";
 import apiClient from "../config";
 
 export const getHobbies = async () => {
@@ -9,7 +10,7 @@ export const getHobbies = async () => {
   }
 };
 
-export const addHobby = async (hobby: { userId: string; hobby: string }) => {
+export const addHobby = async (hobby: NewHobby) => {
   try {
     const { data } = await apiClient.post("/hobbies", hobby);
     return data;
