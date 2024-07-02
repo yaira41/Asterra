@@ -7,7 +7,7 @@ import UserTable from "./user-table";
 const UserManagement: React.FC = () => {
   return (
     <Container>
-      <Box display="flex" marginLeft={30} marginBottom={4}>
+      <Box display="flex" marginBottom={4}>
         <Typography variant="h4" gutterBottom>
           User Management
         </Typography>
