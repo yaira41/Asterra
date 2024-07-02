@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -9,36 +8,42 @@ import {
   FormControl,
   CircularProgress,
 } from "@mui/material";
-import useAddHobby from "../hooks/useAddHobbie";
+import { useForm, Controller } from "react-hook-form";
+import useAddHobby from "../hooks/useAddHobby";
 import { UserWithHobbies } from "../types/user";
-import Toaster from "./toaster";
-import { useUsersWithHobbies } from "../hooks/useUsersWithHobbies";
+import Toaster from "./common/toaster";
+import useUsersWithHobbies from "../hooks/useUsersWithHobbies";
+import useToaster from "../hooks/useToaster";
 
-const AddHobbyForm: React.FC = () => {
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState<string>("");
-  const [hobby, setHobby] = useState("");
-  const [isFormValid, setIsFormValid] = useState(false);
-  const [toaster, setToaster] = useState({
-    open: false,
-    message: "",
-    color: "success" as "success" | "error",
+interface FormData {
+  selectedUserId: string;
+  hobby: string;
+}
+
+const AddHobbyForm = () => {
+  const {
+    control,
+    handleSubmit,
+    register,
+    reset,
+    formState: { isValid, isDirty },
+  } = useForm<FormData>({
+    mode: "onChange",
+    defaultValues: { selectedUserId: "", hobby: "" },
   });
-  const addHobbyMutation = useAddHobby();
 
+  const { toaster, setToaster, handleCloseToaster } = useToaster();
+  const addHobbyMutation = useAddHobby();
   const { data: users, isLoading: isUsersLoading } = useUsersWithHobbies();
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const currentUser = users?.find((x) => x.id === +selectedUserId);
-    if (!currentUser?.hobbies.includes(hobby)) {
+  const onSubmit = (data: FormData) => {
+    const currentUser = users?.find((x) => x.id === +data.selectedUserId);
+    if (!currentUser?.hobbies?.includes(data.hobby)) {
       addHobbyMutation.mutate(
-        { userId: +selectedUserId, hobby },
+        { userId: +data.selectedUserId, hobby: data.hobby },
         {
           onSuccess: () => {
-            setSelectedUserId("");
-            setHobby("");
+            reset();
             setToaster({
               open: true,
               message: "Hobby added successfully!",
@@ -63,39 +68,36 @@ const AddHobbyForm: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    setIsFormValid(selectedUserId !== "" && hobby.trim() !== "");
-  }, [selectedUserId, hobby]);
-
-  const handleCloseToaster = () => {
-    setToaster({ ...toaster, open: false });
-  };
-
   return (
     <Container>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl fullWidth margin="normal">
           <InputLabel id="user-select-label">User</InputLabel>
-          <Select
-            labelId="user-select-label"
-            value={selectedUserId}
-            onChange={(e) => setSelectedUserId(e.target.value as string)}
-          >
-            {isUsersLoading ? (
-              <MenuItem disabled>Loading...</MenuItem>
-            ) : (
-              users?.map((user: UserWithHobbies) => (
-                <MenuItem key={user.id} value={user.id}>
-                  {user.firstName} {user.lastName}
-                </MenuItem>
-              ))
+          <Controller
+            name="selectedUserId"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                labelId="user-select-label"
+                onChange={(e) => field.onChange(e.target.value as string)}
+              >
+                {isUsersLoading ? (
+                  <MenuItem disabled>Loading...</MenuItem>
+                ) : (
+                  users?.map((user: UserWithHobbies) => (
+                    <MenuItem key={user.id} value={user.id}>
+                      {user.firstName} {user.lastName}
+                    </MenuItem>
+                  ))
+                )}
+              </Select>
             )}
-          </Select>
+          />
         </FormControl>
         <TextField
           label="Hobby"
-          value={hobby}
-          onChange={(e) => setHobby(e.target.value)}
+          {...register("hobby", { required: true })}
           fullWidth
           margin="normal"
         />
@@ -103,7 +105,7 @@ const AddHobbyForm: React.FC = () => {
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!isFormValid || addHobbyMutation.isPending}
+          disabled={!isDirty || !isValid || addHobbyMutation.isPending}
         >
           {addHobbyMutation.isPending ? (
             <CircularProgress size={24} />
@@ -112,12 +114,14 @@ const AddHobbyForm: React.FC = () => {
           )}
         </Button>
       </form>
-      <Toaster
-        message={toaster.message}
-        open={toaster.open}
-        color={toaster.color}
-        onClose={handleCloseToaster}
-      />
+      {toaster.open && (
+        <Toaster
+          message={toaster.message}
+          open={toaster.open}
+          color={toaster.color}
+          onClose={handleCloseToaster}
+        />
+      )}
     </Container>
   );
 };

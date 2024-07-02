@@ -26,8 +26,6 @@ type UserWithHobbies = User & Pick<Hobby, "hobbies">;
 export type UserDBWithHobbies = UserDB & Pick<Hobby, "hobbies">;
 
 const getUsers = async (): Promise<User[]> => {
-  console.log("getUSers");
-
   const result = await pool.query(`SELECT * FROM "YAIR_AVIVI".users`);
   const users: User[] = result.rows.map(convertUserDB);
   return users;
