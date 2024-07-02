@@ -55,29 +55,7 @@ const createHobby = async (newHobby: NewHobby): Promise<Hobby> => {
     [userId, currentHobbies]
   );
 
-  const addedHobby: Hobby = {
-    userId: result.rows[0].user_id,
-    hobbies: result.rows[0].hobbies,
-  };
-  return addedHobby;
+  return convertHobbyDB(result.rows[0]);
 };
 
-const deleteHobby = async (user_id: number): Promise<Hobby> => {
-  const result = await pool.query(
-    `DELETE FROM "YAIR_AVIVI".hobbies WHERE user_id = $1 RETURNING *`,
-    [user_id]
-  );
-  const hobby: Hobby = {
-    userId: result.rows[0].user_id,
-    hobbies: result.rows[0].hobbies,
-  };
-  return hobby;
-};
-
-export {
-  getHobbies,
-  getHobbiesByUserId,
-  createUserHobbies,
-  createHobby,
-  deleteHobby,
-};
+export { getHobbies, getHobbiesByUserId, createUserHobbies, createHobby };
