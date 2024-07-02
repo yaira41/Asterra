@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -8,11 +8,13 @@ import {
   TableRow,
   Paper,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import useDeleteUser from "../hooks/useDeleteUser";
 import { UserWithHobbies } from "../types/user";
 import Toaster from "./common/toaster";
-import { useUsersWithHobbies } from "../hooks/useUsersWithHobbies";
+import useUsersWithHobbies from "../hooks/useUsersWithHobbies";
+import TruncatedWithTooltip from "./common/truncated-with-tooltip";
 import useToaster from "../hooks/useToaster";
 
 const UserTable: React.FC = () => {
@@ -21,7 +23,7 @@ const UserTable: React.FC = () => {
   const { data: users, isLoading: usersLoading } = useUsersWithHobbies();
   const deleteUserMutation = useDeleteUser();
 
-  if (usersLoading) return <div>Loading...</div>;
+  if (usersLoading) return <CircularProgress />;
 
   return (
     <>
@@ -41,18 +43,28 @@ const UserTable: React.FC = () => {
           <TableBody>
             {users?.map((user: UserWithHobbies) => (
               <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.firstName}</TableCell>
-                <TableCell>{user.lastName}</TableCell>
-                <TableCell>{user.address}</TableCell>
-                <TableCell>{user.phoneNumber}</TableCell>
+                <TableCell>
+                  <TruncatedWithTooltip text={user.id!.toString()} />
+                </TableCell>
+                <TableCell>
+                  <TruncatedWithTooltip text={user.firstName} />
+                </TableCell>
+                <TableCell>
+                  <TruncatedWithTooltip text={user.lastName} />
+                </TableCell>
+                <TableCell>
+                  <TruncatedWithTooltip text={user.address} />
+                </TableCell>
+                <TableCell>
+                  <TruncatedWithTooltip text={user.phoneNumber} />
+                </TableCell>
                 <TableCell>
                   <ul>
-                    {user.hobbies ? (
-                      user.hobbies.map((hobby) => <li key={hobby}>{hobby}</li>)
-                    ) : (
-                      <></>
-                    )}
+                    {user.hobbies?.map((hobby) => (
+                      <li key={hobby}>
+                        <TruncatedWithTooltip text={hobby} />
+                      </li>
+                    ))}
                   </ul>
                 </TableCell>
                 <TableCell>
@@ -84,12 +96,14 @@ const UserTable: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Toaster
-        message={toaster.message}
-        open={toaster.open}
-        color={toaster.color}
-        onClose={handleCloseToaster}
-      />
+      {toaster.open && (
+        <Toaster
+          message={toaster.message}
+          open={toaster.open}
+          color={toaster.color}
+          onClose={handleCloseToaster}
+        />
+      )}
     </>
   );
 };

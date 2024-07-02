@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUsersWithHobbies } from "../api/endpoints/user";
 import { UserWithHobbies } from "../types/user";
 
-export const useUsersWithHobbies = () => {
+const useUsersWithHobbies = () => {
   const queryKey = ["usersWithHobbies"] as const;
   console.log("userssssssssss");
 
@@ -11,3 +11,5 @@ export const useUsersWithHobbies = () => {
     queryFn: getUsersWithHobbies,
   });
 };
+
+export default useUsersWithHobbies;

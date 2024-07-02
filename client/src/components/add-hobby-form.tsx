@@ -117,12 +117,14 @@ const AddHobbyForm: React.FC = () => {
           )}
         </Button>
       </form>
-      <Toaster
-        message={toaster.message}
-        open={toaster.open}
-        color={toaster.color}
-        onClose={handleCloseToaster}
-      />
+      {toaster.open && (
+        <Toaster
+          message={toaster.message}
+          open={toaster.open}
+          color={toaster.color}
+          onClose={handleCloseToaster}
+        />
+      )}
     </Container>
   );
 };

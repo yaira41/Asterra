@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { User } from "../types/user";
 import { createUser } from "../api/endpoints/user";
 
-export const useCreateUser = () => {
+const useCreateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation<User, Error, User>({
@@ -12,3 +12,5 @@ export const useCreateUser = () => {
     },
   });
 };
+
+export default useCreateUser;
