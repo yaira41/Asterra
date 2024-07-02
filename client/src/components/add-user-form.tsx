@@ -1,108 +1,54 @@
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TextField, Button, Container, CircularProgress } from "@mui/material";
-import { useCreateUser } from "../hooks/useCreateUser";
-import Toaster from "./toaster";
+import { useForm } from "react-hook-form";
+import useCreateUser from "../hooks/useCreateUser";
+import Toaster from "./common/toaster";
 
-type UserState = {
+interface FormData {
   firstName: string;
   lastName: string;
   address: string;
   phoneNumber: string;
-  isValid: boolean;
-  phoneError: boolean;
-};
-
-type UserAction =
-  | { type: "SET_FIRST_NAME"; payload: string }
-  | { type: "SET_LAST_NAME"; payload: string }
-  | { type: "SET_ADDRESS"; payload: string }
-  | { type: "SET_PHONE_NUMBER"; payload: string }
-  | { type: "SET_VALIDITY" }
-  | { type: "SET_PHONE_ERROR"; payload: boolean }
-  | { type: "CLEAR_STATE" };
-
-const initialState: UserState = {
-  firstName: "",
-  lastName: "",
-  address: "",
-  phoneNumber: "",
-  isValid: false,
-  phoneError: false,
-};
-
-const reducer = (state: UserState, action: UserAction): UserState => {
-  switch (action.type) {
-    case "SET_FIRST_NAME":
-      return { ...state, firstName: action.payload };
-    case "SET_LAST_NAME":
-      return { ...state, lastName: action.payload };
-    case "SET_ADDRESS":
-      return { ...state, address: action.payload };
-    case "SET_PHONE_NUMBER":
-      return { ...state, phoneNumber: action.payload };
-    case "SET_VALIDITY":
-      const isValid =
-        state.firstName.trim() !== "" &&
-        state.lastName.trim() !== "" &&
-        state.address.trim() !== "" &&
-        !state.phoneError;
-      return { ...state, isValid };
-    case "SET_PHONE_ERROR":
-      return { ...state, phoneError: action.payload };
-    case "CLEAR_STATE":
-      return initialState;
-    default:
-      return state;
-  }
-};
+}
 
 const AddUserForm: React.FC = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  // console.log("add user rendered");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isValid, isDirty, errors },
+  } = useForm<FormData>({
+    mode: "onChange",
+  });
+
   const [toaster, setToaster] = useState({
     open: false,
     message: "",
     color: "success" as "success" | "error",
   });
+
   const addUserMutation = useCreateUser();
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (state.isValid) {
-      addUserMutation.mutate(
-        {
-          firstName: state.firstName,
-          lastName: state.lastName,
-          address: state.address,
-          phoneNumber: state.phoneNumber,
-        },
-        {
-          onSuccess: () => {
-            dispatch({ type: "CLEAR_STATE" });
-            setToaster({
-              open: true,
-              message: "User added successfully!",
-              color: "success",
-            });
-          },
-          onError: () =>
-            setToaster({
-              open: true,
-              message: "Failed to add user!",
-              color: "error",
-            }),
-        }
-      );
-    }
-  };
-
-  useEffect(() => {
-    const phoneError = !/^[0-9]{9,10}$/.test(state.phoneNumber);
-    dispatch({ type: "SET_PHONE_ERROR", payload: phoneError });
-    dispatch({ type: "SET_VALIDITY" });
-  }, [state.firstName, state.lastName, state.address, state.phoneNumber]);
-
-  const checkPhone = () => {
-    return state.phoneError === true && !!state.phoneNumber;
+  const onSubmit = (data: FormData) => {
+    addUserMutation.mutate(data, {
+      onSuccess: () => {
+        reset();
+        setToaster({
+          open: true,
+          message: "User added successfully!",
+          color: "success",
+        });
+      },
+      onError: () => {
+        setToaster({
+          open: true,
+          message: "Failed to add user!",
+          color: "error",
+        });
+      },
+    });
   };
 
   const handleCloseToaster = () => {
@@ -111,51 +57,50 @@ const AddUserForm: React.FC = () => {
 
   return (
     <Container>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           label="First Name"
-          value={state.firstName}
-          onChange={(e) =>
-            dispatch({ type: "SET_FIRST_NAME", payload: e.target.value })
-          }
           fullWidth
           margin="normal"
+          {...register("firstName", { required: true })}
+          error={!!errors.firstName}
+          helperText={errors.firstName ? "First Name is required" : ""}
         />
         <TextField
           label="Last Name"
-          value={state.lastName}
-          onChange={(e) =>
-            dispatch({ type: "SET_LAST_NAME", payload: e.target.value })
-          }
           fullWidth
           margin="normal"
+          {...register("lastName", { required: true })}
+          error={!!errors.lastName}
+          helperText={errors.lastName ? "Last Name is required" : ""}
         />
         <TextField
           label="Address"
-          value={state.address}
-          onChange={(e) =>
-            dispatch({ type: "SET_ADDRESS", payload: e.target.value })
-          }
           fullWidth
           margin="normal"
+          {...register("address", { required: true })}
+          error={!!errors.address}
+          helperText={errors.address ? "Address is required" : ""}
         />
         <TextField
           label="Phone Number"
-          value={state.phoneNumber}
-          onChange={(e) =>
-            dispatch({ type: "SET_PHONE_NUMBER", payload: e.target.value })
-          }
           fullWidth
           margin="normal"
+          {...register("phoneNumber", {
+            required: true,
+            pattern: /^[0-9]{9,10}$/,
+          })}
+          error={!!errors.phoneNumber}
+          helperText={
+            errors.phoneNumber ? "Phone number must be 9-10 digits" : ""
+          }
           inputProps={{ maxLength: 10 }}
-          error={checkPhone()}
-          helperText={checkPhone() ? "Phone number can be 9-10 numbers" : ""}
         />
         <Button
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!state.isValid || addUserMutation.isPending}
+          disabled={!isDirty || !isValid || addUserMutation.isPending}
         >
           {addUserMutation.isPending ? (
             <CircularProgress size={24} />
