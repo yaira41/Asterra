@@ -1,4 +1,8 @@
 import pool from "../config/db";
+import {
+  convertUserDB,
+  convertUserDBWithHobbies,
+} from "../utils/convertions.utils";
 import { Hobby, createUserHobbies } from "./hobbies";
 
 type User = {
@@ -9,25 +13,27 @@ type User = {
   phoneNumber: string;
 };
 
+export type UserDB = {
+  id?: number;
+  first_name: string;
+  last_name: string;
+  address: string;
+  phone_number: string;
+};
+
 type UserWithHobbies = User & Pick<Hobby, "hobbies">;
+
+export type UserDBWithHobbies = UserDB & Pick<Hobby, "hobbies">;
 
 const getUsers = async (): Promise<User[]> => {
   console.log("getUSers");
 
   const result = await pool.query(`SELECT * FROM "YAIR_AVIVI".users`);
-  const users: User[] = result.rows.map((row) => ({
-    id: row.id,
-    firstName: row.first_name,
-    lastName: row.last_name,
-    address: row.address,
-    phoneNumber: row.phone_number,
-  }));
-
+  const users: User[] = result.rows.map(convertUserDB);
   return users;
 };
 
 const getUsersWithHobbies = async (): Promise<UserWithHobbies[]> => {
-  // Fetch users along with their hobbies using LEFT JOIN
   const result = await pool.query(`
           SELECT 
             u.id, 
@@ -40,16 +46,7 @@ const getUsersWithHobbies = async (): Promise<UserWithHobbies[]> => {
           LEFT JOIN "YAIR_AVIVI".hobbies h ON u.id = h.user_id
         `);
 
-  const usersWithHobbies = result.rows.map((row) => ({
-    id: row.id,
-    firstName: row.first_name,
-    lastName: row.last_name,
-    address: row.address,
-    phoneNumber: row.phone_number,
-    hobbies: row.hobbies,
-  }));
-
-  // Convert the dictionary back to an array for the response
+  const usersWithHobbies = result.rows.map(convertUserDBWithHobbies);
   return usersWithHobbies;
 };
 
@@ -58,7 +55,7 @@ const getUserById = async (id: number): Promise<User> => {
     `SELECT * FROM "YAIR_AVIVI".users WHERE id = $1`,
     [id]
   );
-  return result.rows[0];
+  return convertUserDB(result.rows[0]);
 };
 
 const getUserWithHobbies = async (
@@ -86,16 +83,7 @@ const getUserWithHobbies = async (
     return undefined;
   }
 
-  const userWithHobbies: UserWithHobbies = {
-    id: row.id,
-    firstName: row.first_name,
-    lastName: row.last_name,
-    address: row.address,
-    phoneNumber: row.phone_number,
-    hobbies: row.hobbies,
-  };
-
-  return userWithHobbies;
+  return convertUserDBWithHobbies(row);
 };
 
 const createUser = async (user: User): Promise<User> => {
@@ -105,8 +93,9 @@ const createUser = async (user: User): Promise<User> => {
     [firstName, lastName, address, phoneNumber]
   );
 
-  createUserHobbies(result.rows[0].id);
-  return result.rows[0];
+  const newUser = convertUserDB(result.rows[0]);
+  createUserHobbies(newUser.id!);
+  return newUser;
 };
 
 const deleteUser = async (id: number): Promise<User> => {
