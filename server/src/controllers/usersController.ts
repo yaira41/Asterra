@@ -1,5 +1,12 @@
 import { Request, Response } from "express";
-import { getUsers, getUserById, createUser, deleteUser } from "../models/users";
+import {
+  getUsers,
+  getUserById,
+  createUser,
+  deleteUser,
+  getUsersWithHobbies,
+  getUserWithHobbies,
+} from "../models/users";
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -14,11 +21,43 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+const getUsersWithHObbies = async (req: Request, res: Response) => {
+  try {
+    const usersWithHobbies = await getUsersWithHobbies();
+
+    res.status(200).json(usersWithHobbies);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
+  }
+};
+
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const user = await getUserById(Number(req.params.id));
     if (user) {
       res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
+  }
+};
+
+const getSingleUserWithHObbies = async (req: Request, res: Response) => {
+  try {
+    const userWithHobby = await getUserWithHobbies(Number(req.params.id));
+
+    if (userWithHobby) {
+      res.status(200).json(userWithHobby);
     } else {
       res.status(404).json({ message: "User not found" });
     }
@@ -61,4 +100,11 @@ const removeUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllUsers, getSingleUser, addUser, removeUser };
+export {
+  getAllUsers,
+  getUsersWithHObbies,
+  getSingleUser,
+  getSingleUserWithHObbies,
+  addUser,
+  removeUser,
+};

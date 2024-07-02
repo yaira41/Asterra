@@ -1,9 +1,20 @@
-import { User } from "../../types/user";
+import { User, UserWithHobbies } from "../../types/user";
 import apiClient from "../config";
 
 export const getUsers = async (): Promise<User[]> => {
   try {
     const response = await apiClient.get<User[]>("/users");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUsersWithHobbies = async (): Promise<UserWithHobbies[]> => {
+  try {
+    const response = await apiClient.get<UserWithHobbies[]>(
+      "/users/WithHobbies"
+    );
     return response.data;
   } catch (error) {
     throw error;

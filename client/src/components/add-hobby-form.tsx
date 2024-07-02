@@ -10,9 +10,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import useAddHobby from "../hooks/useAddHobbie";
-import { useUsers } from "../hooks/useUsers";
-import { User } from "../types/user";
+import { UserWithHobbies } from "../types/user";
 import Toaster from "./toaster";
+import { useUsersWithHobbies } from "../hooks/useUsersWithHobbies";
 
 const AddHobbyForm: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
@@ -25,7 +25,7 @@ const AddHobbyForm: React.FC = () => {
   });
   const addHobbyMutation = useAddHobby();
 
-  const { data: users, isLoading: isUsersLoading } = useUsers();
+  const { data: users, isLoading: isUsersLoading } = useUsersWithHobbies();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -73,7 +73,7 @@ const AddHobbyForm: React.FC = () => {
             {isUsersLoading ? (
               <MenuItem disabled>Loading...</MenuItem>
             ) : (
-              users?.map((user: User) => (
+              users?.map((user: UserWithHobbies) => (
                 <MenuItem key={user.id} value={user.id}>
                   {user.firstName} {user.lastName}
                 </MenuItem>

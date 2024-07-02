@@ -8,8 +8,7 @@ export const useCreateUser = () => {
   return useMutation<User, Error, User>({
     mutationFn: createUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["hobbies"] });
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["usersWithHobbies"] });
     },
   });
 };

@@ -10,15 +10,13 @@ import {
   Button,
 } from "@mui/material";
 import useDeleteUser from "../hooks/useDeleteUser";
-import useHobbies from "../hooks/useHobbies";
-import { useUsers } from "../hooks/useUsers";
-import { Hobby } from "../types/hobbies";
-import { User } from "../types/user";
+import { UserWithHobbies } from "../types/user";
 import Toaster from "./toaster";
+import { useUsersWithHobbies } from "../hooks/useUsersWithHobbies";
 
 const UserTable: React.FC = () => {
-  const { data: hobbies, isLoading: hobbiesLoading } = useHobbies();
-  const { data: users, isLoading: usersLoading } = useUsers();
+  console.log("user table rendered");
+  const { data: users, isLoading: usersLoading } = useUsersWithHobbies();
   const [toaster, setToaster] = useState({
     open: false,
     message: "",
@@ -26,18 +24,7 @@ const UserTable: React.FC = () => {
   });
   const deleteUserMutation = useDeleteUser();
 
-  if (usersLoading || hobbiesLoading) return <div>Loading...</div>;
-
-  const getUserHobbies = (userId: number) => {
-    const userHobbies = hobbies?.find(
-      (userHobbies: Hobby) => userHobbies.userId === userId
-    );
-    return userHobbies?.hobbies?.length ? (
-      userHobbies.hobbies.map((hobby) => <li key={hobby}>{hobby}</li>)
-    ) : (
-      <></>
-    );
-  };
+  if (usersLoading) return <div>Loading...</div>;
 
   const handleCloseToaster = () => {
     setToaster({ ...toaster, open: false });
@@ -59,7 +46,7 @@ const UserTable: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users?.map((user: User) => (
+            {users?.map((user: UserWithHobbies) => (
               <TableRow key={user.id}>
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.firstName}</TableCell>
@@ -67,7 +54,13 @@ const UserTable: React.FC = () => {
                 <TableCell>{user.address}</TableCell>
                 <TableCell>{user.phoneNumber}</TableCell>
                 <TableCell>
-                  <ul>{getUserHobbies(user.id!)}</ul>
+                  <ul>
+                    {user.hobbies ? (
+                      user.hobbies.map((hobby) => <li key={hobby}>{hobby}</li>)
+                    ) : (
+                      <></>
+                    )}
+                  </ul>
                 </TableCell>
                 <TableCell>
                   <Button
