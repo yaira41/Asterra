@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   TextField,
   Button,
@@ -21,9 +20,7 @@ interface FormData {
   hobby: string;
 }
 
-const AddHobbyForm: React.FC = () => {
-  console.log("add hobby");
-
+const AddHobbyForm = () => {
   const {
     control,
     handleSubmit,

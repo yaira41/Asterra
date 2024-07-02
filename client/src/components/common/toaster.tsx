@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
@@ -9,7 +9,7 @@ type ToasterProps = {
   onClose: () => void;
 };
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
 ) {
@@ -18,7 +18,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 const Toaster = ({ message, open, color, onClose }: ToasterProps) => {
   return (
-    <Snackbar open={open} autoHideDuration={6000} onClose={onClose}>
+    <Snackbar open={open} autoHideDuration={4000} onClose={onClose}>
       <Alert onClose={onClose} severity={color}>
         {message}
       </Alert>

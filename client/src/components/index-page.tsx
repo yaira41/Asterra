@@ -1,10 +1,9 @@
-import React from "react";
 import { Container, Typography, Box } from "@mui/material";
 import AddUserForm from "./add-user-form";
 import AddHobbyForm from "./add-hobby-form";
 import UserTable from "./user-table";
 
-const UserManagement: React.FC = () => {
+const UserManagement = () => {
   return (
     <Container>
       <Box display="flex" marginBottom={4}>

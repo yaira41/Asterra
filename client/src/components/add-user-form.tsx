@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { TextField, Button, Container, CircularProgress } from "@mui/material";
 import { useForm } from "react-hook-form";
 import useCreateUser from "../hooks/useCreateUser";
@@ -12,9 +11,7 @@ interface FormData {
   phoneNumber: string;
 }
 
-const AddUserForm: React.FC = () => {
-  // console.log("add user rendered");
-
+const AddUserForm = () => {
   const {
     register,
     handleSubmit,

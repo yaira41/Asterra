@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Table,
   TableBody,
@@ -17,8 +16,7 @@ import useUsersWithHobbies from "../hooks/useUsersWithHobbies";
 import TruncatedWithTooltip from "./common/truncated-with-tooltip";
 import useToaster from "../hooks/useToaster";
 
-const UserTable: React.FC = () => {
-  console.log("user table rendered");
+const UserTable = () => {
   const { toaster, setToaster, handleCloseToaster } = useToaster();
   const { data: users, isLoading: usersLoading } = useUsersWithHobbies();
   const deleteUserMutation = useDeleteUser();

@@ -4,7 +4,6 @@ import { UserWithHobbies } from "../types/user";
 
 const useUsersWithHobbies = () => {
   const queryKey = ["usersWithHobbies"] as const;
-  console.log("userssssssssss");
 
   return useQuery<UserWithHobbies[], Error>({
     queryKey,
