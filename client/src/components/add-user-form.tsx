@@ -3,6 +3,7 @@ import { TextField, Button, Container, CircularProgress } from "@mui/material";
 import { useForm } from "react-hook-form";
 import useCreateUser from "../hooks/useCreateUser";
 import Toaster from "./common/toaster";
+import useToaster from "../hooks/useToaster";
 
 interface FormData {
   firstName: string;
@@ -23,11 +24,7 @@ const AddUserForm: React.FC = () => {
     mode: "onChange",
   });
 
-  const [toaster, setToaster] = useState({
-    open: false,
-    message: "",
-    color: "success" as "success" | "error",
-  });
+  const { toaster, setToaster, handleCloseToaster } = useToaster();
 
   const addUserMutation = useCreateUser();
 
@@ -49,10 +46,6 @@ const AddUserForm: React.FC = () => {
         });
       },
     });
-  };
-
-  const handleCloseToaster = () => {
-    setToaster({ ...toaster, open: false });
   };
 
   return (

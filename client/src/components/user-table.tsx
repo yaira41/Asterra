@@ -11,24 +11,17 @@ import {
 } from "@mui/material";
 import useDeleteUser from "../hooks/useDeleteUser";
 import { UserWithHobbies } from "../types/user";
-import Toaster from "./toaster";
+import Toaster from "./common/toaster";
 import { useUsersWithHobbies } from "../hooks/useUsersWithHobbies";
+import useToaster from "../hooks/useToaster";
 
 const UserTable: React.FC = () => {
   console.log("user table rendered");
+  const { toaster, setToaster, handleCloseToaster } = useToaster();
   const { data: users, isLoading: usersLoading } = useUsersWithHobbies();
-  const [toaster, setToaster] = useState({
-    open: false,
-    message: "",
-    color: "success" as "success" | "error",
-  });
   const deleteUserMutation = useDeleteUser();
 
   if (usersLoading) return <div>Loading...</div>;
-
-  const handleCloseToaster = () => {
-    setToaster({ ...toaster, open: false });
-  };
 
   return (
     <>

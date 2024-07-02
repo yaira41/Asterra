@@ -14,6 +14,7 @@ import useAddHobby from "../hooks/useAddHobby";
 import { UserWithHobbies } from "../types/user";
 import Toaster from "./common/toaster";
 import useUsersWithHobbies from "../hooks/useUsersWithHobbies";
+import useToaster from "../hooks/useToaster";
 
 interface FormData {
   selectedUserId: string;
@@ -34,11 +35,7 @@ const AddHobbyForm: React.FC = () => {
     defaultValues: { selectedUserId: "", hobby: "" },
   });
 
-  const [toaster, setToaster] = useState({
-    open: false,
-    message: "",
-    color: "success" as "success" | "error",
-  });
+  const { toaster, setToaster, handleCloseToaster } = useToaster();
   const addHobbyMutation = useAddHobby();
   const { data: users, isLoading: isUsersLoading } = useUsersWithHobbies();
 
@@ -72,10 +69,6 @@ const AddHobbyForm: React.FC = () => {
         color: "error",
       });
     }
-  };
-
-  const handleCloseToaster = () => {
-    setToaster({ ...toaster, open: false });
   };
 
   return (
