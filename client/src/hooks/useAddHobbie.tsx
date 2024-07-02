@@ -7,7 +7,7 @@ const useAddHobby = () => {
   return useMutation({
     mutationFn: addHobby,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["hobbies"] });
+      queryClient.invalidateQueries({ queryKey: ["usersWithHobbies"] });
     },
   });
 };

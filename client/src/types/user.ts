@@ -1,3 +1,5 @@
+import { Hobby } from "./hobbies";
+
 export type User = {
   id?: number;
   firstName: string;
@@ -5,3 +7,5 @@ export type User = {
   address: string;
   phoneNumber: string;
 };
+
+export type UserWithHobbies = User & Pick<Hobby, "hobbies">;

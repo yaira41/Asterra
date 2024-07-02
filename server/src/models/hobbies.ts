@@ -1,7 +1,13 @@
 import pool from "../config/db";
+import { convertHobbyDB } from "../utils/convertions.utils";
 
-type Hobby = {
+export type Hobby = {
   userId: number;
+  hobbies: string[];
+};
+
+export type HobbyDB = {
+  user_id: number;
   hobbies: string[];
 };
 
@@ -12,7 +18,9 @@ type NewHobby = {
 
 const getHobbies = async (): Promise<Hobby[]> => {
   const result = await pool.query(`SELECT * FROM "YAIR_AVIVI".hobbies`);
-  return result.rows;
+
+  const hobbies: Hobby[] = result.rows.map(convertHobbyDB);
+  return hobbies;
 };
 
 const getHobbiesByUserId = async (userId: number): Promise<Hobby> => {
@@ -20,7 +28,8 @@ const getHobbiesByUserId = async (userId: number): Promise<Hobby> => {
     `SELECT * FROM "YAIR_AVIVI".hobbies WHERE user_id = $1`,
     [userId]
   );
-  return result.rows[0];
+
+  return convertHobbyDB(result.rows[0]);
 };
 
 const createUserHobbies = async (userId: number): Promise<boolean> => {
@@ -45,21 +54,7 @@ const createHobby = async (newHobby: NewHobby): Promise<Hobby> => {
     [userId, currentHobbies]
   );
 
-  return result.rows[0];
+  return convertHobbyDB(result.rows[0]);
 };
 
-const deleteHobby = async (user_id: number): Promise<Hobby> => {
-  const result = await pool.query(
-    `DELETE FROM "YAIR_AVIVI".hobbies WHERE user_id = $1 RETURNING *`,
-    [user_id]
-  );
-  return result.rows[0];
-};
-
-export {
-  getHobbies,
-  getHobbiesByUserId,
-  createUserHobbies,
-  createHobby,
-  deleteHobby,
-};
+export { getHobbies, getHobbiesByUserId, createUserHobbies, createHobby };

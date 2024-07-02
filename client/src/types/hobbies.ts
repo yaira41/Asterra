@@ -1,4 +1,9 @@
 export type Hobby = {
-  user_id: number;
+  userId: number;
   hobbies: string[];
+};
+
+export type NewHobby = {
+  userId: number;
+  hobby: string;
 };

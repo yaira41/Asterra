@@ -1,5 +1,9 @@
 import pool from "../config/db";
-import { createUserHobbies } from "./hobbies";
+import {
+  convertUserDB,
+  convertUserDBWithHobbies,
+} from "../utils/convertions.utils";
+import { Hobby, createUserHobbies } from "./hobbies";
 
 type User = {
   id?: number;
@@ -9,7 +13,7 @@ type User = {
   phoneNumber: string;
 };
 
-type DBUser = {
+export type UserDB = {
   id?: number;
   first_name: string;
   last_name: string;
@@ -17,17 +21,33 @@ type DBUser = {
   phone_number: string;
 };
 
-const getUsers = async (): Promise<User[]> => {
-  const result = await pool.query(`SELECT * FROM "YAIR_AVIVI".users`);
-  const users: User[] = result.rows.map((row) => ({
-    id: row.id,
-    firstName: row.first_name,
-    lastName: row.last_name,
-    address: row.address,
-    phoneNumber: row.phone_number,
-  }));
+type UserWithHobbies = User & Pick<Hobby, "hobbies">;
 
+export type UserDBWithHobbies = UserDB & Pick<Hobby, "hobbies">;
+
+const getUsers = async (): Promise<User[]> => {
+  console.log("getUSers");
+
+  const result = await pool.query(`SELECT * FROM "YAIR_AVIVI".users`);
+  const users: User[] = result.rows.map(convertUserDB);
   return users;
+};
+
+const getUsersWithHobbies = async (): Promise<UserWithHobbies[]> => {
+  const result = await pool.query(`
+          SELECT 
+            u.id, 
+            u.first_name, 
+            u.last_name, 
+            u.address, 
+            u.phone_number, 
+            h.hobbies
+          FROM "YAIR_AVIVI".users u
+          LEFT JOIN "YAIR_AVIVI".hobbies h ON u.id = h.user_id
+        `);
+
+  const usersWithHobbies = result.rows.map(convertUserDBWithHobbies);
+  return usersWithHobbies;
 };
 
 const getUserById = async (id: number): Promise<User> => {
@@ -35,7 +55,35 @@ const getUserById = async (id: number): Promise<User> => {
     `SELECT * FROM "YAIR_AVIVI".users WHERE id = $1`,
     [id]
   );
-  return result.rows[0];
+  return convertUserDB(result.rows[0]);
+};
+
+const getUserWithHobbies = async (
+  id: number
+): Promise<UserWithHobbies | undefined> => {
+  const result = await pool.query(
+    `
+    SELECT 
+      u.id, 
+      u.first_name, 
+      u.last_name, 
+      u.address, 
+      u.phone_number, 
+      h.hobbies
+    FROM "YAIR_AVIVI".users u
+    LEFT JOIN "YAIR_AVIVI".hobbies h ON u.id = h.user_id
+    WHERE u.id = $1
+  `,
+    [id]
+  );
+
+  const row = result.rows[0];
+
+  if (!row) {
+    return undefined;
+  }
+
+  return convertUserDBWithHobbies(row);
 };
 
 const createUser = async (user: User): Promise<User> => {
@@ -45,8 +93,9 @@ const createUser = async (user: User): Promise<User> => {
     [firstName, lastName, address, phoneNumber]
   );
 
-  createUserHobbies(result.rows[0].id);
-  return result.rows[0];
+  const newUser = convertUserDB(result.rows[0]);
+  createUserHobbies(newUser.id!);
+  return newUser;
 };
 
 const deleteUser = async (id: number): Promise<User> => {
@@ -57,4 +106,11 @@ const deleteUser = async (id: number): Promise<User> => {
   return result.rows[0];
 };
 
-export { getUsers, getUserById, createUser, deleteUser };
+export {
+  getUsers,
+  getUsersWithHobbies,
+  getUserById,
+  getUserWithHobbies,
+  createUser,
+  deleteUser,
+};
