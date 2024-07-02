@@ -1,4 +1,4 @@
 export type Hobby = {
-  user_id: number;
+  userId: number;
   hobbies: string[];
 };

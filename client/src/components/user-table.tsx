@@ -30,7 +30,7 @@ const UserTable: React.FC = () => {
 
   const getUserHobbies = (userId: number) => {
     const userHobbies = hobbies?.find(
-      (userHobbies: Hobby) => userHobbies.user_id === userId
+      (userHobbies: Hobby) => userHobbies.userId === userId
     );
     return userHobbies?.hobbies?.length ? (
       userHobbies.hobbies.map((hobby) => <li key={hobby}>{hobby}</li>)
