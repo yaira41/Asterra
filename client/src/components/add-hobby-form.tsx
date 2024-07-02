@@ -16,6 +16,7 @@ import { useUsersWithHobbies } from "../hooks/useUsersWithHobbies";
 
 const AddHobbyForm: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [hobby, setHobby] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
   const [toaster, setToaster] = useState({
@@ -29,27 +30,37 @@ const AddHobbyForm: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    addHobbyMutation.mutate(
-      { userId: selectedUserId, hobby },
-      {
-        onSuccess: () => {
-          setSelectedUserId("");
-          setHobby("");
-          setToaster({
-            open: true,
-            message: "Hobby added successfully!",
-            color: "success",
-          });
-        },
-        onError: () => {
-          setToaster({
-            open: true,
-            message: "Failed to add hobby!",
-            color: "error",
-          });
-        },
-      }
-    );
+
+    const currentUser = users?.find((x) => x.id === +selectedUserId);
+    if (!currentUser?.hobbies.includes(hobby)) {
+      addHobbyMutation.mutate(
+        { userId: +selectedUserId, hobby },
+        {
+          onSuccess: () => {
+            setSelectedUserId("");
+            setHobby("");
+            setToaster({
+              open: true,
+              message: "Hobby added successfully!",
+              color: "success",
+            });
+          },
+          onError: () => {
+            setToaster({
+              open: true,
+              message: "Failed to add hobby!",
+              color: "error",
+            });
+          },
+        }
+      );
+    } else {
+      setToaster({
+        open: true,
+        message: `The hobby already exists for ${currentUser?.firstName} ${currentUser?.lastName}!`,
+        color: "error",
+      });
+    }
   };
 
   useEffect(() => {
